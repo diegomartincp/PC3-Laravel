@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('busqueda', function (Blueprint $table) {
+        Schema::create('historial', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')->references('id')->on('users');
-            $table->string('query');
-            $table->date('fecha_inicio');
-            $table->date('fecha_fin');
+            $table->unsignedBigInteger('busqueda_id');
+            $table->foreign('busqueda_id')->references('id')->on('busqueda');
+            $table->float('media_dia');
+            $table->timestamp('fecha');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('busqueda');
+        Schema::dropIfExists('historial');
     }
 };
