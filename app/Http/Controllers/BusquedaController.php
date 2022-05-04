@@ -6,6 +6,24 @@ use Illuminate\Http\Request;
 
 class BusquedaController extends Controller
 {
+    /**
+     * TWEETS
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tweets(Request $request)
+    {
+        $ciudad = $request->query('ciudad');
+        $ciudad_ = str_replace(" ", "+", $ciudad);
+
+        #Precio medio y m2
+        $result = exec("C:/Users/campo/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\campo\Documents\GitHub\PC3-Laravel/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
+        $json = json_decode($result);
+
+        return $json;
+    }
+
+
         /**
      * PRECIOS DEL m2 Y PRECIO MEDIO
      *
@@ -22,6 +40,8 @@ class BusquedaController extends Controller
 
         return $json;
     }
+
+
             /**
      * VIVIENDAS A LA VENTA
      *

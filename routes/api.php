@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/precio','App\Http\Controllers\BusquedaController@precio');
 Route::get('/viviendas','App\Http\Controllers\BusquedaController@viviendas');
+Route::get('/tweets','App\Http\Controllers\BusquedaController@tweets');
