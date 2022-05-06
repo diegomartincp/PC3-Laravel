@@ -4,15 +4,8 @@ from datetime import datetime, timedelta
 
 #Recoger la query
 query = sys.argv[1] #Este argumento es la query
-#query="Tres+Cantos"
+#query="Alcobendas"
 query_ = query.replace ("+", " ") #Cambiamos el + por un espacio
-
-#Contstruimos las fechas
-date_ahora = d = datetime.today()
-date_anterior = d = datetime.today() - timedelta(days=5) #Restamos un dia
-
-date_ahora_string=date_ahora.strftime("%Y%m%d")+"0000"
-date_anterior_string=date_anterior.strftime("%Y%m%d")+"0000"
 
 #CLAVES DIEGO
 #consumer_key = "9eoCAPNf9fVg2kzInNI5A8Uge"
@@ -35,18 +28,12 @@ api = tweepy.API(auth)
 
 
 #Realiza la búsqueda en la api
-tweets = tweepy.Cursor(api.search_full_archive, #metodo para buscar todos los archivos
-                   label="development", #entorno
-                   query=query_,        #busqueda de ciudad
-                   fromDate=date_anterior_string,#fecha inicio
-                   toDate=date_ahora_string,  #fecha fin
-                   maxResults=100     #numero de resultados
-                   )
+tweets = tweepy.Cursor(api.search_tweets, q=query).items(100)
 
 tweets_texto=[]
 
 #Iteramos entre lo recuperado
-for tweet in tweets.items():
+for tweet in tweets:
     #print("ID TWEET: " + str(tweet.id))
     #print(tweet.text)
     tweets_texto.append(tweet.text)   #Añadimos al array de tweets
