@@ -17,7 +17,8 @@ class BusquedaController extends Controller
         $ciudad_ = str_replace(" ", "+", $ciudad);
 
         #Precio medio y m2
-        $result = exec("C:/Users/campo/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\campo\Documents\GitHub\PC3-Laravel/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
+        #$result = exec("C:/Users/campo/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\campo\Documents\GitHub\PC3-Laravel/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
+        $result = exec("C:/Users/Victor/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\Victor\LARAVEL\PC3-Laravel/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
         $json = json_decode($result);
 
         return $json;
@@ -54,6 +55,24 @@ class BusquedaController extends Controller
 
         #Precio medio y m2
         $result = exec("C:/Users/campo/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\campo\Documents\GitHub\PC3-Laravel/web_scraping_fotocasa_laravel.py " . $ciudad_);
+        $json = json_decode($result);
+
+        return $json;
+    }
+
+                /**
+     * ODIO NOTICIAS
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function noticias(Request $request)
+    {
+        $ciudad = $request->query('ciudad');
+        $ciudad_ = str_replace(" ", "+", $ciudad);
+
+        #Precio medio y m2
+        #$result = exec("C:/Users/campo/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\campo\Documents\GitHub\PC3-Laravel/web_scraping_fotocasa_laravel.py " . $ciudad_);
+        $result = exec("C:/Users/Victor/AppData/Local/Microsoft/WindowsApps/python3.9.exe C:\Users\Victor\LARAVEL\PC3-Laravel/prediccion.py " . $ciudad_);
         $json = json_decode($result);
 
         return $json;
