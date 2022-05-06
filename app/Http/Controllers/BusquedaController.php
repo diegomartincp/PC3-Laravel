@@ -28,6 +28,7 @@ class BusquedaController extends Controller
 
         return $json;
     }
+    /*prueba commit*/
 
 
         /**
