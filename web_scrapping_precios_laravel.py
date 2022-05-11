@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import sys
 
 query = sys.argv[1]
-#query="Tres+Cantos"
+#query_="tres+cantos"
 query_ = query.replace ("+", " ")
 
 URL = "https://www.fotocasa.es/indice-precio-vivienda/ac/"+query_
@@ -31,13 +31,13 @@ m2_regex = re.search('(\d*\.\d*)',precios[0].text)
 precio_medio_regex = re.search('(\d*\.\d*)',precios[1].text)
 
 #Sacamos el valor numérico
-m2_numerico = str(precio_medio_regex.group(1))
+m2_numerico = str(m2_regex.group(1))
 precio_medio_numerico = str(precio_medio_regex.group(1))
 
 #Exportar a JSON
 noticias = {}
 import json
-noticias['Precios'] = {"m2": m2_numerico, "medio": precio_medio_numerico}
+noticias= {"m2": str(m2_numerico), "medio": str(precio_medio_numerico)}
 
 archivo = json.dumps(noticias)
 
