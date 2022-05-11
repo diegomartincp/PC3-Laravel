@@ -1,4 +1,5 @@
 import pickle
+from warnings import catch_warnings
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.snowball import SpanishStemmer
 stemmer = SpanishStemmer()
@@ -6,8 +7,9 @@ analyzer = CountVectorizer().build_analyzer()
 
 import sys
 #Recoger la query
-query = sys.argv[1]
+#query = sys.argv[1]
 #query="tres+cantos"
+query="alcobendas"
 
 ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
@@ -19,7 +21,7 @@ from bs4 import BeautifulSoup
 
 lista_links=[] #almacenara los links de cada una de las noticias
 url="https://www.20minutos.es/busqueda/?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D=2022-03-01&publishedAt%5Buntil%5D=2022-03-05"
-
+print(url)
 r = requests.get(url)
 #print(r.status_code) #200 bueno / 404 error
 
@@ -82,11 +84,18 @@ for i in range(len(diccionario)):
         new_row = {'Documento':str(i), 'Predicción':"Odio"}
     df2=df2.append(new_row, ignore_index=True)
 
-
+print(df2)
 
 result = df2.groupby('Predicción').nunique()
-cant_no = result.loc['No odio'][0]
-cant_o = result.loc['Odio'][0]
+try:
+    cant_no = result.loc['No odio'][0]
+except:
+    cant_no = 0
+try:
+    cant_o = result.loc['Odio'][0]
+except:
+    cant_o = 0
+
 cant_total = cant_no + cant_o
 porcentaje = cant_o/cant_total
 
