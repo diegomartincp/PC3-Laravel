@@ -84,11 +84,9 @@ class BusquedaController extends Controller
 
         $ciudad = $request->query('ciudad');
         $ciudad_ = str_replace(" ", "+", $ciudad);
-
-        #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/prediccion.py " . $ciudad_);
+        #Llamada python
         $json = json_decode($result);
-
         return $json;
     }
 

@@ -7,6 +7,7 @@ analyzer = CountVectorizer().build_analyzer()
 import sys
 #Recoger la query
 query = sys.argv[1]
+#query="tres+cantos"
 
 ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
@@ -91,6 +92,6 @@ porcentaje = cant_o/cant_total
 
 import json
 json_noticias={}
-json_noticias['Delito odio'] = {"Porcentaje": porcentaje}
+json_noticias= {"resultado": str(porcentaje)}
 archivo = json.dumps(json_noticias)
 print(archivo)
