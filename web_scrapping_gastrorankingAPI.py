@@ -1,5 +1,7 @@
+#PRIMERO RECUPERAMOS LA URL DE LA API DE FOTOCASA
 import requests
 from bs4 import BeautifulSoup
+import sys
 import pandas as pd
 
 def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
@@ -52,15 +54,25 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
         df = df.append(dfNew,ignore_index=True)
         
     #Exportamos el dataframe a un csv
-    df.to_csv('infoGastroranking.csv', index=False)
+    #df.to_csv('infoGastroranking.csv', index=False)
     
     return df
 
 
+
+query = "Boadilla del monte"
+query_= query.replace(" ", "+").lower()
+
+urlAPI = "https://gastroranking.es/ajax_location_search?where="+query_
+
+r = requests.get(url = urlAPI)
+data = r.json()
+url_from_api = data[0].split(', ')
+print(url_from_api[1])
 
 #Una vez hecha la llamada (con las tres listas en las que almacenaremos los datos), el metodo nos devolvera
 #estas listas llenas con la información que nos interesa
 nombres = []
 valoraciones = []
 etiquetas = []
-gastrorankingData("Madrid", "Boadilla del monte", nombres, valoraciones, etiquetas)
+gastrorankingData(url_from_api[1],url_from_api[0],nombres,valoraciones,etiquetas)
