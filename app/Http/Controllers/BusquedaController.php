@@ -90,6 +90,28 @@ class BusquedaController extends Controller
         return $json;
     }
 
+        /**
+     * RANKING DE RESTAURANTES
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function restaurantes(Request $request)
+    {
+        $RUTA_PYTHON=env('RUTA_PYTHON');
+        $RUTA_CARPETA_LARAVEL=env('RUTA_CARPETA_LARAVEL');
+
+        $ciudad = $request->query('ciudad');
+        $ciudad_ = str_replace(" ", "+", $ciudad);
+
+        #Llamada python
+        $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/web_scrapping_gastrorankingAPI.py " . $ciudad_);
+        $json = json_decode($result);
+
+        return $json;
+    }
+
+
+
     /**
      * Display a listing of the resource.
      *

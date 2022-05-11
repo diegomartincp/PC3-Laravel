@@ -54,16 +54,16 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
         df = df.append(dfNew,ignore_index=True)
         
     #Exportamos el dataframe a un csv
-    #df.to_csv('infoGastroranking.csv', index=False)
+    df.to_csv('infoGastroranking.csv', index=False)
     
     return df
 
 
 
-query = "Boadilla del monte"
-query_= query.replace(" ", "+").lower()
+query = "boadilla+del+monte"
+#query_= query.replace(" ", "+").lower()
 
-urlAPI = "https://gastroranking.es/ajax_location_search?where="+query_
+urlAPI = "https://gastroranking.es/ajax_location_search?where="+query
 
 r = requests.get(url = urlAPI)
 data = r.json()
@@ -76,3 +76,13 @@ nombres = []
 valoraciones = []
 etiquetas = []
 gastrorankingData(url_from_api[1],url_from_api[0],nombres,valoraciones,etiquetas)
+
+#Exportar a JSON
+restaurantes = {}
+import json
+
+restaurantes = {"nombre": nombres, "valoracion": valoraciones, "etiquetas": etiquetas}
+archivo = json.dumps(restaurantes)
+
+print()
+print(archivo)
