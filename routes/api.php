@@ -24,4 +24,4 @@ Route::get('/viviendas','App\Http\Controllers\BusquedaController@viviendas');
 Route::get('/tweets','App\Http\Controllers\BusquedaController@tweets');
 Route::get('/noticias','App\Http\Controllers\BusquedaController@noticias');
 Route::get('/restaurantes','App\Http\Controllers\BusquedaController@restaurantes');
-
+Route::get('/bbdd','App\Http\Controllers\BusquedaController@TEST_BBDD');

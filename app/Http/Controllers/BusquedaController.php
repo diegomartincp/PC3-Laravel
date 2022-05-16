@@ -4,11 +4,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;  //PARA LA BBDD
 
 
 
 class BusquedaController extends Controller
 {
+
+    public function TEST_BBDD(Request $request)
+    {   //DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
+        $ciudad = $request->query('ciudad');
+        //1. Crear búsqueda
+        DB::insert('insert into busqueda (usuario_id, query) values (?, ?)', [1, $ciudad]);
+        $busqueda = DB::select('select id from busqueda order by id desc limit 1');
+        $id = $busqueda[0];
+        $busqueda_id = $id->id;
+
+        //2. Scrapping
+        $json_viviendas = self::viviendas($request);
+        $comprar =$json_viviendas['comprar'];
+        $alquilar =$json_viviendas['alquilar'];
+
+        $precio = self::precio($request);
+        $m2 =$precio['m2'];
+        $medio =$precio['medio'];
+        DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
+
+        // 3. tweets
+        $json_tweets = self::tweets($request);
+        $valores = json_encode($json_tweets->valores);
+        DB::insert('insert into tweets (busqueda_id, ultimos_100) values (?, ?)', [$busqueda_id,  $valores]);
+        return $json_tweets->valores;
+    }
+
     /**
      * TWEETS
      *
@@ -46,7 +74,7 @@ class BusquedaController extends Controller
 
         #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/web_scrapping_precios_laravel.py " . $ciudad_);
-        $json = json_decode($result);
+        $json = json_decode($result,true);
 
         return $json;
     }
@@ -67,7 +95,7 @@ class BusquedaController extends Controller
 
         #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/web_scraping_fotocasa_laravel.py " . $ciudad_);
-        $json = json_decode($result);
+        $json = json_decode($result,true);  //OJO IMPLEMENTAMOS TRUE PARA USAR ARRAY ASOCIATIVO
 
         return $json;
     }

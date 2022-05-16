@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('scrapping', function (Blueprint $table) {
+        Schema::create('restaurantes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('busqueda_id');
             $table->foreign('busqueda_id')->references('id')->on('busqueda');
-            $table->float('precio_m2');
-            $table->float('precio_viviendas');
-            $table->text('num_viviendas_venta');
-            $table->text('num_viviendas_alquiler');
+            $table->string('nombre');
+            $table->float('puntuacion');
+            $table->string('etiquetas');
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_scrapping');
+        Schema::dropIfExists('restaurantes');
     }
 };

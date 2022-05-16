@@ -29,10 +29,14 @@ for oper in operacion:
     total.insert(0, info)
     #rellenamos el json
     if oper =="comprar":
-        json_viviendas['Comprar'] = {"info": info}
+        info_comprar=info
+        #json_viviendas['Comprar'] = {"info": info}
     else:
-        json_viviendas['Alquilar'] = {"info": info}
+        info_alquilar=info
+        #json_viviendas['Alquilar'] = {"info": info}
 
+#Rellenar json
+json_viviendas= {"comprar": info_comprar, "alquilar":info_alquilar}
 
 
 

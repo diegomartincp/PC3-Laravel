@@ -17,8 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('busqueda_id');
             $table->foreign('busqueda_id')->references('id')->on('busqueda');
-            $table->float('media_dia');
-            $table->timestamp('fecha');
+            $table->float('porcentaje_odio');
             $table->timestamps();
         });
     }

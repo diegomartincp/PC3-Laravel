@@ -60,6 +60,6 @@ for tweet in tweets_texto:
 #Exportar a JSON
 import json
 json_twets={}
-json_twets['Sentimiento'] = {"valores": registro_sentimientos}
+json_twets = {"valores": registro_sentimientos}
 archivo = json.dumps(json_twets)
 print(archivo)

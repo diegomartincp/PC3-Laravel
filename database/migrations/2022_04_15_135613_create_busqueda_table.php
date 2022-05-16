@@ -18,8 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id')->references('id')->on('users');
             $table->string('query');
-            $table->date('fecha_inicio');
-            $table->date('fecha_fin');
             $table->timestamps();
         });
     }
