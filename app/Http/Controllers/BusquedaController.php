@@ -12,7 +12,7 @@ class BusquedaController extends Controller
 {
 
     public function TEST_BBDD(Request $request)
-    {   //DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
+    {   DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
         $ciudad = $request->query('ciudad');
         //1. Crear búsqueda
         DB::insert('insert into busqueda (usuario_id, query) values (?, ?)', [1, $ciudad]);
