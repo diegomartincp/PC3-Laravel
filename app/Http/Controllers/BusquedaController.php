@@ -12,7 +12,7 @@ class BusquedaController extends Controller
 {
 
     public function TEST_BBDD(Request $request)
-    {   DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
+    {   //DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
         $ciudad = $request->query('ciudad');
         //1. Crear búsqueda
         DB::insert('insert into busqueda (usuario_id, query) values (?, ?)', [1, $ciudad]);
@@ -20,21 +20,51 @@ class BusquedaController extends Controller
         $id = $busqueda[0];
         $busqueda_id = $id->id;
 
-        //2. Scrapping
-        $json_viviendas = self::viviendas($request);
-        $comprar =$json_viviendas['comprar'];
-        $alquilar =$json_viviendas['alquilar'];
+        //. VERIFICAR CACHE
+        $cache = DB::select('select * from scrapping join busqueda on busqueda.id = scrapping.busqueda_id join historial on busqueda.id = historial.busqueda_id where busqueda.created_at >= DATE_ADD(NOW(), INTERVAL -30 DAY) and busqueda.query= (?) order by busqueda.created_at DESC limit 1;', [$ciudad]);
 
-        $precio = self::precio($request);
-        $m2 =$precio['m2'];
-        $medio =$precio['medio'];
-        DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
+        if (empty($cache)){
+            //3. Scrapping si no hay caché
+            $json_viviendas = self::viviendas($request);
+            $comprar =$json_viviendas['comprar'];
+            $alquilar =$json_viviendas['alquilar'];
 
-        // 3. tweets
+            $precio = self::precio($request);
+            $m2 =$precio['m2'];
+            $medio =$precio['medio'];
+            DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
+
+            //4. Odio si no hay caché
+            $json_odio = self::noticias($request);
+            $odio = $json_odio['resultado'];
+            DB::insert('insert into historial (busqueda_id, porcentaje_odio) values (?, ?)', [$busqueda_id,  $odio]);
+        }
+        else{
+            $cache_json = $cache[0];
+            //return $cache_json;
+            //Scrapping si hay caché
+            $comprar =$cache_json->num_viviendas_venta;
+            $alquilar =$cache_json->num_viviendas_alquiler;
+            $m2=$cache_json->precio_m2;
+            $medio =$cache_json->precio_viviendas;
+            DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
+
+            //Odio si hay caché
+            $odio = $cache_json->porcentaje_odio;
+            DB::insert('insert into historial (busqueda_id, porcentaje_odio) values (?, ?)', [$busqueda_id,  $odio]);
+        }
+
+
+
+
+        // TWEETS se ejecutan siempre
         $json_tweets = self::tweets($request);
         $valores = json_encode($json_tweets->valores);
         DB::insert('insert into tweets (busqueda_id, ultimos_100) values (?, ?)', [$busqueda_id,  $valores]);
-        return $json_tweets->valores;
+
+        //Final. Select de todo para esa búsqueda
+        $resultado = DB::select('SELECT busqueda.id, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, tweets.ultimos_100, historial.porcentaje_odio FROM `busqueda` join scrapping on busqueda.id=scrapping.busqueda_id join tweets on busqueda.id=tweets.busqueda_id join historial on busqueda.id = historial.busqueda_id where busqueda.id =(?)', [$busqueda_id]);
+        return $resultado[0];
     }
 
     /**
@@ -114,7 +144,7 @@ class BusquedaController extends Controller
         $ciudad_ = str_replace(" ", "+", $ciudad);
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/prediccion.py " . $ciudad_);
         #Llamada python
-        $json = json_decode($result);
+        $json = json_decode($result,true);
         return $json;
     }
 
