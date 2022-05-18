@@ -4,14 +4,17 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.snowball import SpanishStemmer
 stemmer = SpanishStemmer()
 analyzer = CountVectorizer().build_analyzer()
-
+import os
 import sys
 #Recoger la query
 #query = sys.argv[1]
 #query="tres+cantos"
 query="alcobendas"
 
-ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
+ruta_absoluta=os.getcwd()
+ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
+print(ruta)
+#ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
     return (stemmer.stem(w) for w in analyzer(doc))
 fichero_cargado = pickle.load(open(ruta, 'rb'))

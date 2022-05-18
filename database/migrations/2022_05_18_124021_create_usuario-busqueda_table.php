@@ -13,12 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tweets', function (Blueprint $table) {
+        Schema::create('usuario-busqueda', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('usuario_id');
+            $table->foreign('usuario_id')->references('id')->on('users');
             $table->unsignedBigInteger('busqueda_id');
             $table->foreign('busqueda_id')->references('id')->on('busqueda');
-            $table->text('ultimos_100');    //ojo es text
-            $table->timestamps();
+            $table->text('ultimos_100');
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tweets');
+        Schema::dropIfExists('usuario-busqueda');
     }
 };
