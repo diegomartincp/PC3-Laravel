@@ -54,28 +54,44 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
         df = df.append(dfNew,ignore_index=True)
         
     #Exportamos el dataframe a un csv
-    df.to_csv('infoGastroranking.csv', index=False)
+    #df.to_csv('infoGastroranking.csv', index=False)
     
     return df
 
+#Metodo para eliminar las tildes de una cadena de texto
+import unicodedata
+def elimina_tildes(cadena):
+    s = ''.join((c for c in unicodedata.normalize('NFD',cadena) if unicodedata.category(c) != 'Mn'))
+    return s
 
-
-query = "boadilla+del+monte"
+query = sys.argv[1]
+#query = "mÃ³stoles"
+query = query.encode('raw_unicode_escape').decode('utf8')
+query = elimina_tildes(query)
+print(query)
 #query_= query.replace(" ", "+").lower()
 
 urlAPI = "https://gastroranking.es/ajax_location_search?where="+query
 
-r = requests.get(url = urlAPI)
+Headers = {"X-Requested-With": "XMLHttpRequest"}
+#response = requests.post(urlAPI, headers=Headers)
+
+r = requests.get(url=urlAPI, headers=Headers)
 data = r.json()
 url_from_api = data[0].split(', ')
-print(url_from_api[1])
+
+ca = url_from_api[1]
+municipio = url_from_api[0].encode('raw_unicode_escape').decode('utf8')
+municipio = elimina_tildes(query)
 
 #Una vez hecha la llamada (con las tres listas en las que almacenaremos los datos), el metodo nos devolvera
 #estas listas llenas con la información que nos interesa
 nombres = []
 valoraciones = []
 etiquetas = []
-gastrorankingData(url_from_api[1],url_from_api[0],nombres,valoraciones,etiquetas)
+gastrorankingData(ca,municipio,nombres,valoraciones,etiquetas)
+#gastrorankingData("madrid",query,nombres,valoraciones,etiquetas)
+
 
 #Exportar a JSON
 restaurantes = {}
