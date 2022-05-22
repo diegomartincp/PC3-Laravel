@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\DB;  //PARA LA BBDD
 
 class BusquedaController extends Controller
 {
+    public function registro_usuario(Request $request)
+    {   //registrar usuario
+        $name = $request->query('nombre_user');
+        $email = $request->query('correo');
+        $password = $request->query('contrasena');
+        $tipo_user = $request->query('tipo_user');
+        DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', [$name,$email,$password,$tipo_user]);
+        //return "REGISTRADO USUARIO INICIAL";
+        return $name;
+    }
+
     public function crear_usuario(Request $request)
     {   //Crear usuario
         DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
