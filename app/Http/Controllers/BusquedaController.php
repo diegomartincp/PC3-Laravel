@@ -67,7 +67,7 @@ class BusquedaController extends Controller
 
             // TWEETS se ejecutan siempre
             $json_tweets = self::tweets($request);
-            $valores_ = json_encode($json_tweets->valores);
+            $valores_ = json_encode($json_tweets['valores']);
             DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
         }
 
@@ -95,7 +95,7 @@ class BusquedaController extends Controller
 
         #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
-        $json = json_decode($result);
+        $json = json_decode($result,true);
 
         return $json;
     }
