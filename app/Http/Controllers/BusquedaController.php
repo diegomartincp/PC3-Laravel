@@ -17,8 +17,17 @@ class BusquedaController extends Controller
         $password = $request->query('contrasena');
         $tipo_user = $request->query('tipo_user');
         DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', [$name,$email,$password,$tipo_user]);
-        //return "REGISTRADO USUARIO INICIAL";
-        return $name;
+        return "REGISTRADO USUARIO";
+        //return $name;
+    }
+
+    public function login_usuario(Request $request)
+    {   //login usuario
+        $email = $request->query('correo');
+        $password = $request->query('contrasena');
+        DB::select('select * from users where password=? AND email=?', [$password,$email]);
+        return "LOGIN USUARIO";
+        //return $name;
     }
 
     public function crear_usuario(Request $request)
@@ -55,10 +64,19 @@ class BusquedaController extends Controller
             $medio =$precio['medio'];
             DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
 
+            //RESTAURANTES si no hay caché
+            $json_restaurantes = self::restaurantes($request);
+            $nombres =$json_restaurantes['nombre'];
+            $valoraciones =$json_restaurantes['valoracion'];
+            $etiquetas =$json_restaurantes['etiquetas'];
+            DB::insert('insert into restaurantes (busqueda_id, nombre, puntuacion, etiquetas) values (?, ?, ?, ?, ?)', [$busqueda_id,  $nombres, $valoraciones, $etiquetas]);
+
             // TWEETS se ejecutan siempre
             $json_tweets = self::tweets($request);
             $valores = json_encode($json_tweets->valores);
             DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores]);
+
+
 
         }
         else{

@@ -27,3 +27,4 @@ Route::get('/restaurantes','App\Http\Controllers\BusquedaController@restaurantes
 Route::get('/bbdd','App\Http\Controllers\BusquedaController@TEST_BBDD');
 Route::get('/crear_usuario','App\Http\Controllers\BusquedaController@crear_usuario');
 Route::get('/registro_usuario','App\Http\Controllers\BusquedaController@registro_usuario');
+Route::get('/login_usuario','App\Http\Controllers\BusquedaController@login_usuario');
