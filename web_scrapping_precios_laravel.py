@@ -6,13 +6,15 @@ from bs4 import BeautifulSoup
 import sys
 
 query = sys.argv[1]
-#query_="tres+cantos"
-query_ = query.replace ("+", " ")
+#query="Vilagarcia+de+arousa"
+query_ = query.replace ("+", "%20")
+
 
 URL = "https://www.fotocasa.es/indice-precio-vivienda/ac/"+query_
 r = requests.get(url = URL)
 data = r.json()
 url_from_api = data[0]['value'] #Tenemos la url sobre la que hacer web scrapping
+
 
 URL_busqueda="https://www.fotocasa.es"+url_from_api
 print(URL_busqueda)
@@ -21,7 +23,7 @@ request_fotocasa = requests.get(url = URL_busqueda)
 soup = BeautifulSoup(request_fotocasa.content, "html.parser")
 div_contenido = soup.find('div', {'class': 't-panel comprar active'}) #Div con precios
 precios = div_contenido.findAll('div', {'class': 'b-detail_title'})
-print(query)
+#print(query)
 print(precios[0].text)  #Precio metro cuadrado
 print(precios[1].text)  #Precio medio
 
