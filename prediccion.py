@@ -6,13 +6,22 @@ stemmer = SpanishStemmer()
 analyzer = CountVectorizer().build_analyzer()
 import os
 import sys
+from datetime import datetime
+from datetime import timedelta
+
 #Recoger la query
-#query = sys.argv[1]
-#query="tres+cantos"
-query="alcobendas"
+query = sys.argv[1]
+#query="Villaviciosa"
+#query="alcobendas"
+
+fecha_hoy = datetime.today()
+fecha_30dias = fecha_hoy - timedelta(days = 30)
+hoy = fecha_hoy.strftime('%Y-%m-%d')
+ayer = fecha_30dias.strftime('%Y-%m-%d')
+
 
 ruta_absoluta=os.getcwd()
-ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
+ruta=ruta_absoluta+"\modelo_pc3_v.sav"
 print(ruta)
 #ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
@@ -23,7 +32,7 @@ import requests
 from bs4 import BeautifulSoup
 
 lista_links=[] #almacenara los links de cada una de las noticias
-url="https://www.20minutos.es/busqueda/?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D=2022-03-01&publishedAt%5Buntil%5D=2022-03-05"
+url="https://www.20minutos.es/busqueda/?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D="+str(ayer)+"&publishedAt%5Buntil%5D="+str(hoy)
 print(url)
 r = requests.get(url)
 #print(r.status_code) #200 bueno / 404 error
