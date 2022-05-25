@@ -47,6 +47,7 @@ class BusquedaController extends Controller
             //Odio si no hay caché
             $json_odio = self::noticias($request);
             $odio = $json_odio['resultado'];
+            $odio = json_encode($json_odio['resultado']);
 
             //Crear búsqueda y rellenar con odio
             DB::insert('insert into busqueda (usuario_id, query,porcentaje_odio) values (?, ?,?)', [1, $ciudad,$odio]);
@@ -57,11 +58,15 @@ class BusquedaController extends Controller
             //Scrapping si no hay caché
             $json_viviendas = self::viviendas($request);
             $comprar =$json_viviendas['comprar'];
+            $comprar = json_encode($json_viviendas['comprar']);
             $alquilar =$json_viviendas['alquilar'];
+            $alquilar = json_encode($json_viviendas['alquilar']);
 
             $precio = self::precio($request);
             $m2 =$precio['m2'];
+            $m2 = json_encode($precio['m2']);
             $medio =$precio['medio'];
+            $medio = json_encode($precio['medio']);
             DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
 
             //RESTAURANTES si no hay caché
@@ -84,8 +89,8 @@ class BusquedaController extends Controller
 
         // TWEETS se ejecutan siempre
         $json_tweets = self::tweets($request);
-        #$valores_ = json_encode($json_tweets['valores']);
-        $valores = json_encode($json_tweets->valores);
+        $valores_ = json_encode($json_tweets['valores']);
+        #$valores = json_encode($json_tweets->valores);
         DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
 
         //Final. Select de todo para esa búsqueda
