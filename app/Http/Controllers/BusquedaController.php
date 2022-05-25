@@ -67,33 +67,29 @@ class BusquedaController extends Controller
             //RESTAURANTES si no hay caché
             $json_restaurantes = self::restaurantes($request);
             $nombres =$json_restaurantes['nombre'];
+            $nombres = json_encode($json_restaurantes['nombre']);
+
             $valoraciones =$json_restaurantes['valoracion'];
+            $valoraciones =json_encode($json_restaurantes['valoracion']);
+
             $etiquetas =$json_restaurantes['etiquetas'];
-            DB::insert('insert into restaurantes (busqueda_id, nombre, puntuacion, etiquetas) values (?, ?, ?, ?, ?)', [$busqueda_id,  $nombres, $valoraciones, $etiquetas]);
+            $etiquetas =json_encode($json_restaurantes['etiquetas']);
 
-            // TWEETS se ejecutan siempre
-            $json_tweets = self::tweets($request);
-            $valores = json_encode($json_tweets->valores);
-            DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores]);
-
-
-
+            DB::insert('insert into restaurantes (busqueda_id, nombre, puntuacion, etiquetas) values (?, ?, ?, ?)', [$busqueda_id,  $nombres, $valoraciones, $etiquetas]);
         }
         else{
             $cache_json = $cache[0];
             $busqueda_id = $cache_json->id; //ESTE ES EL ID QUE YA EXISTE Y REUTILIZAMOS
-
-            // TWEETS se ejecutan siempre
-            $json_tweets = self::tweets($request);
-            $valores_ = json_encode($json_tweets['valores']);
-            DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
         }
 
+        // TWEETS se ejecutan siempre
+        $json_tweets = self::tweets($request);
+        $valores_ = json_encode($json_tweets['valores']);
+        DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
+
         //Final. Select de todo para esa búsqueda
-        $resultado = DB::select('SELECT busqueda.id, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, `usuario-busqueda`.ultimos_100, busqueda.porcentaje_odio FROM `busqueda` join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id join scrapping on busqueda.id=scrapping.busqueda_id where busqueda.id =(?)', [$busqueda_id]);
+        $resultado = DB::select('SELECT busqueda.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, `usuario-busqueda`.ultimos_100, busqueda.porcentaje_odio FROM `busqueda` join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id join scrapping on busqueda.id=scrapping.busqueda_id join restaurantes on busqueda.id=restaurantes.busqueda_id where busqueda.id =(?)', [$busqueda_id]);
         return $resultado[0];
-
-
 
     }
 
@@ -194,7 +190,7 @@ class BusquedaController extends Controller
 
         #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/web_scrapping_gastrorankingAPI.py " . $ciudad_);
-        $json = json_decode($result);
+        $json = json_decode($result,true);
 
         return $json;
     }
