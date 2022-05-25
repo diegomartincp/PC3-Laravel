@@ -84,7 +84,8 @@ class BusquedaController extends Controller
 
         // TWEETS se ejecutan siempre
         $json_tweets = self::tweets($request);
-        $valores_ = json_encode($json_tweets['valores']);
+        #$valores_ = json_encode($json_tweets['valores']);
+        $valores = json_encode($json_tweets->valores);
         DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
 
         //Final. Select de todo para esa búsqueda
