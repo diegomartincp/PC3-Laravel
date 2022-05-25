@@ -11,8 +11,8 @@ from datetime import timedelta
 
 #Recoger la query
 query = sys.argv[1]
-#query="Villaviciosa"
-#query="alcobendas"
+#query="Madrid"
+
 
 fecha_hoy = datetime.today()
 fecha_30dias = fecha_hoy - timedelta(days = 30)
@@ -21,7 +21,7 @@ ayer = fecha_30dias.strftime('%Y-%m-%d')
 
 
 ruta_absoluta=os.getcwd()
-ruta=ruta_absoluta+"\modelo_pc3_v.sav"
+ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
 print(ruta)
 #ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
@@ -33,7 +33,7 @@ from bs4 import BeautifulSoup
 
 lista_links=[] #almacenara los links de cada una de las noticias
 url="https://www.20minutos.es/busqueda/?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D="+str(ayer)+"&publishedAt%5Buntil%5D="+str(hoy)
-print(url)
+
 r = requests.get(url)
 #print(r.status_code) #200 bueno / 404 error
 
