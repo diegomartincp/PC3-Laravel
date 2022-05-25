@@ -37,3 +37,6 @@ Route::get('/bbdd','App\Http\Controllers\BusquedaController@TEST_BBDD');
 Route::get('/crear_usuario','App\Http\Controllers\BusquedaController@crear_usuario');
 Route::get('/registro_usuario','App\Http\Controllers\BusquedaController@registro_usuario');
 Route::get('/login_usuario','App\Http\Controllers\BusquedaController@login_usuario');
+
+//ADMIN
+Route::get('/select_busquedas','App\Http\Controllers\BusquedaController@select_busquedas_admin');

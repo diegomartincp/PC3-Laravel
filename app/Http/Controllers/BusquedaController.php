@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;  //PARA LA BBDD
 
 class BusquedaController extends Controller
 {
+    public function select_busquedas_admin(Request $request)
+    {
+        $busquedas = DB::select('select * from busqueda order by Created_at DESC', []);
+        return $busquedas;
+    }
     public function registro_usuario(Request $request)
     {   //registrar usuario
         $name = $request->query('nombre_user');
