@@ -10,11 +10,39 @@ use Illuminate\Support\Facades\DB;  //PARA LA BBDD
 
 class BusquedaController extends Controller
 {
+    //FUNCIONES DE RECUPERACIÓN DE DATOS DE ADMIN
     public function select_busquedas_admin(Request $request)
     {
-        $busquedas = DB::select('select * from busqueda order by Created_at DESC', []);
+        $busquedas = DB::select('select `usuario-busqueda`.`busqueda_id`,`usuario-busqueda`.`id`,busqueda.query,`usuario-busqueda`.`created_at`
+        from busqueda
+        join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id order by `usuario-busqueda`.`created_at` DESC', []);
         return $busquedas;
     }
+    public function select_cache_admin(Request $request)
+    {
+        $busquedas = DB::select('SELECT busqueda.query, busqueda.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.porcentaje_odio
+        FROM `busqueda`
+        join scrapping on busqueda.id=scrapping.busqueda_id join restaurantes on busqueda.id=restaurantes.busqueda_id', []);
+        return $busquedas;
+    }
+    public function select_query(Request $request)
+    {
+        $query = $request->query('query');
+        $busquedas = DB::select('SELECT busqueda.query, `usuario-busqueda`.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.porcentaje_odio
+        FROM `busqueda`
+        join scrapping on busqueda.id=scrapping.busqueda_id
+        join restaurantes on busqueda.id=restaurantes.busqueda_id
+        join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id
+        where busqueda.query=(?)', [$query]);
+        return $busquedas;
+    }
+    public function select_ranking(Request $request)
+    {
+        $busquedas = DB::select('SELECT count(busqueda.id), busqueda.query FROM `usuario-busqueda`JOIN busqueda on `usuario-busqueda`.`busqueda_id`=busqueda.id GROUP by busqueda.query order by count(busqueda.id) DESC', []);
+        return $busquedas;
+    }
+
+    //FUNCIONES REGISTRO Y LOGIN ANTIGUAS
     public function registro_usuario(Request $request)
     {   //registrar usuario
         $name = $request->query('nombre_user');
@@ -35,6 +63,7 @@ class BusquedaController extends Controller
         //return $name;
     }
 
+    //FUNCIONES DE GESTIÓN DE CACHÉ Y BBDD
     public function crear_usuario(Request $request)
     {   //Crear usuario
         DB::insert('insert into users (name, email, password, tipo_user) values (?,?,?, ?)', ['No_registrado','-','-', 0]);
