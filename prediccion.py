@@ -10,8 +10,8 @@ from datetime import datetime
 from datetime import timedelta
 
 #Recoger la query
-query = sys.argv[1]
-#query="Madrid"
+#query = sys.argv[1]
+query="alcobendas"
 
 
 fecha_hoy = datetime.today()
@@ -21,7 +21,8 @@ ayer = fecha_30dias.strftime('%Y-%m-%d')
 
 
 ruta_absoluta=os.getcwd()
-ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
+#ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
+ruta=ruta_absoluta+"\modelo_pc3_v.sav"
 print(ruta)
 #ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
@@ -54,7 +55,7 @@ while (r.status_code == 200):
 
     #Modificamos la url para acceder a la siguiente pagina (str(numero)). En caso de que no exista, salimos del bucle while.
     numero = numero + 1
-    url="https://www.20minutos.es/busqueda/"+str(numero)+"?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D=2022-03-01&publishedAt%5Buntil%5D=2022-03-05"
+    url="https://www.20minutos.es/busqueda/"+str(numero)+"?q="+query+"&sort_field=publishedAt&category=&publishedAt%5Bfrom%5D="+str(ayer)+"&publishedAt%5Buntil%5D="+str(hoy)
     r = requests.get(url)
 
 #ACEDER AL CONTENIDO DE CADA UNA DE LAS NOTICIAS
@@ -66,19 +67,20 @@ for url in lista_links:
 
     #Buscamos la etiqueta que contenga el contenido
     parrafos = soup1.find('div', {'class': 'article-text'})
-    #Despues obtenemos solo los parrafos (contenido importante)
-    texto = parrafos.findAll('p')
+    if (parrafos !=None):
+        #Despues obtenemos solo los parrafos (contenido importante)
+        texto = parrafos.findAll('p')
 
-    #Unimos el contenido de todos los parrafos, accediendo a cada uno de ellos y uniendolos (join) dejando un espacio entre ellos
-    contenidoTag = []
-    for i in range(len(texto)):
-            contenidoTag.append((texto[i].text)) #si da error .strip() (Visto con Borja)
-    tag = " ".join(contenidoTag)
+        #Unimos el contenido de todos los parrafos, accediendo a cada uno de ellos y uniendolos (join) dejando un espacio entre ellos
+        contenidoTag = []
+        for i in range(len(texto)):
+                contenidoTag.append((texto[i].text)) #si da error .strip() (Visto con Borja)
+        tag = " ".join(contenidoTag)
 
-    #Variable para almacenar el titulo y el contenido
-    parrafosCont = tag.lower()          #transformamos a minuscula
+        #Variable para almacenar el titulo y el contenido
+        parrafosCont = tag.lower()          #transformamos a minuscula
 
-    diccionario.insert(0, parrafosCont)
+        diccionario.insert(0, parrafosCont)
 
 #Llegados a este punto tenemos un array de strings con los ficheros, un array con los nombres de los ficheros, el modelo, lista de palabras y lista tf-idf
 
