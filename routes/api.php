@@ -39,7 +39,7 @@ Route::get('/registro_usuario','App\Http\Controllers\BusquedaController@registro
 Route::get('/login_usuario','App\Http\Controllers\BusquedaController@login_usuario');
 
 //ADMIN
-Route::get('/select_busquedas','App\Http\Controllers\BusquedaController@select_busquedas_admin');
+Route::get('/select_busquedas','App\Http\Controllers\BusquedaController@select_busquedas_admin')->middleware('auth:api');
 Route::get('/select_cache','App\Http\Controllers\BusquedaController@select_cache_admin');
 Route::get('/select_query','App\Http\Controllers\BusquedaController@select_query');
 Route::get('/select_ranking','App\Http\Controllers\BusquedaController@select_ranking');

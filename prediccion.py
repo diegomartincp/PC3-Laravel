@@ -10,8 +10,8 @@ from datetime import datetime
 from datetime import timedelta
 
 #Recoger la query
-#query = sys.argv[1]
-query="alcobendas"
+query = sys.argv[1]
+#query="alcobendas"
 
 
 fecha_hoy = datetime.today()
@@ -21,8 +21,8 @@ ayer = fecha_30dias.strftime('%Y-%m-%d')
 
 
 ruta_absoluta=os.getcwd()
-#ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
-ruta=ruta_absoluta+"\modelo_pc3_v.sav"
+ruta=ruta_absoluta+"\..\modelo_pc3_v.sav"
+#ruta=ruta_absoluta+"\modelo_pc3_v.sav"
 print(ruta)
 #ruta="C:/Users/Victor/LARAVEL/PC3-Laravel/modelo_pc3_v.sav"
 def stemmed_words(doc):
