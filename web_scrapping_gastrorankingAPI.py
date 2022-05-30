@@ -67,8 +67,8 @@ def elimina_tildes(cadena):
     #s = s.replace("-", "+") #SI normaliza un + a un - lo acambiamos
     return s
 
-query = sys.argv[1]
-#query = "mÃ³stoles"
+#query = sys.argv[1]
+query = "tres cantos"
 #query = query.encode('raw_unicode_escape').decode('utf8')
 query = elimina_tildes(query)
 #print(query)
@@ -105,12 +105,15 @@ print(municipio)
 gastrorankingData(ca,municipio,nombres,valoraciones,etiquetas)
 #gastrorankingData("madrid",query,nombres,valoraciones,etiquetas)
 
+nombresString = "::".join(nombres)
+valoracionesString = "::".join(valoraciones)
+etiquetasString = "::".join(etiquetas)
 
 #Exportar a JSON
 restaurantes = {}
 import json
 
-restaurantes = {"nombre": nombres, "valoracion": valoraciones, "etiquetas": etiquetas}
+restaurantes = {"nombre": nombresString, "valoracion": valoracionesString, "etiquetas": etiquetasString}
 archivo = json.dumps(restaurantes)
 
 print()
