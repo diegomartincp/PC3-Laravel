@@ -4,9 +4,10 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
+import re
 
 query = sys.argv[1]
-#query="Vilagarcia+de+arousa"
+#query="colmenar viejo"
 query_ = query.replace ("+", "%20")
 
 
@@ -20,17 +21,33 @@ URL_busqueda="https://www.fotocasa.es"+url_from_api
 print(URL_busqueda)
 #Ahora hacemos web scrapping
 request_fotocasa = requests.get(url = URL_busqueda)
-soup = BeautifulSoup(request_fotocasa.content, "html.parser")
-div_contenido = soup.find('div', {'class': 't-panel comprar active'}) #Div con precios
-precios = div_contenido.findAll('div', {'class': 'b-detail_title'})
-#print(query)
-print(precios[0].text)  #Precio metro cuadrado
-print(precios[1].text)  #Precio medio
 
-#Tratamos con regex para sacar solo los números
-import re
-m2_regex = re.search('(\d*\.\d*)',precios[0].text)
-precio_medio_regex = re.search('(\d*\.\d*)',precios[1].text)
+try:
+    soup = BeautifulSoup(request_fotocasa.content, "html.parser")
+    div_contenido = soup.find('div', {'class': 't-panel comprar active'}) #Div con precios
+    precios = div_contenido.findAll('div', {'class': 'b-detail_title'})
+    #print(query)
+    print(precios[0].text)  #Precio metro cuadrado
+    print(precios[1].text)  #Precio medio
+    #Tratamos con regex para sacar solo los números
+    m2_regex = re.search('(\d*\.\d*)',precios[0].text)
+    precio_medio_regex = re.search('(\d*\.\d*)',precios[1].text)
+except:
+    #tienen un formato diferentes
+    soup = BeautifulSoup(request_fotocasa.content, "html.parser")
+    div_contenido = soup.find('table', {'class': 'price-comparison pcstreet'}) #Div con precios
+    precios = div_contenido.findAll('div', {'class': 'text-big'})
+    #print(query)
+    print(precios)
+    print(precios[0].text)  #Precio metro cuadrado
+    print(precios[1].text)  #Precio medio
+    #Tratamos con regex para sacar solo los números
+    m2_regex = re.search('(\d*\.\d*)',precios[0].text)
+    precio_medio_regex = re.search('(\d*\.\d*)',precios[2].text)
+
+
+
+
 
 #Sacamos el valor numérico
 m2_numerico = str(m2_regex.group(1))
