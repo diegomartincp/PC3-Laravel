@@ -11,29 +11,32 @@ use Illuminate\Support\Facades\DB;  //PARA LA BBDD
 class BusquedaController extends Controller
 {
     //FUNCIONES DE RECUPERACIÓN DE DATOS DE ADMIN
+    //Ver todas las búsquedas hechas
     public function select_busquedas_admin(Request $request)
     {
-        $busquedas = DB::select('select `usuario-busqueda`.`busqueda_id`,`usuario-busqueda`.`id`,busqueda.query,`usuario-busqueda`.`created_at`
-        from busqueda
-        join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id order by `usuario-busqueda`.`created_at` DESC', []);
+        $busquedas = DB::select('select busqueda.cache_id,busqueda.id,cache.query,busqueda.created_at
+        from cache
+        join busqueda on cache.id = busqueda.cache_id order by busqueda.created_at DESC', []);
         return $busquedas;
     }
+    //Ver contenido de la cache
     public function select_cache_admin(Request $request)
     {
-        $busquedas = DB::select('SELECT busqueda.query, busqueda.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.porcentaje_odio
-        FROM `busqueda`
-        join scrapping on busqueda.id=scrapping.busqueda_id join restaurantes on busqueda.id=restaurantes.busqueda_id', []);
+        $busquedas = DB::select('SELECT cache.query, cache.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, cache.porcentaje_odio
+        FROM cache
+        join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id', []);
         return $busquedas;
     }
+    //Seleccionar todas las búsquedas para una query
     public function select_query(Request $request)
     {
         $query = $request->query('query');
-        $busquedas = DB::select('SELECT busqueda.query, `usuario-busqueda`.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.porcentaje_odio
-        FROM `busqueda`
-        join scrapping on busqueda.id=scrapping.busqueda_id
-        join restaurantes on busqueda.id=restaurantes.busqueda_id
-        join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id
-        where busqueda.query=(?)', [$query]);
+        $busquedas = DB::select('SELECT cache.query, busqueda.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, cache.porcentaje_odio
+        FROM cache
+        join scrapping on cache.id=scrapping.cache_id
+        join restaurantes on cache.id=restaurantes.cache_id
+        join busqueda on cache.id = busqueda.cache_id
+        where cache.query=(?)', [$query]);
         return $busquedas;
     }
     public function select_ranking(Request $request)
@@ -73,7 +76,7 @@ class BusquedaController extends Controller
     {
         $ciudad = $request->query('ciudad');
 
-        $cache = DB::select('select busqueda.id from scrapping join busqueda on busqueda.id = scrapping.busqueda_id where busqueda.created_at >= DATE_ADD(NOW(), INTERVAL -30 DAY) and busqueda.query= (?) order by busqueda.created_at DESC limit 1;', [$ciudad]);
+        $cache = DB::select('select cache.id from scrapping join cache on cache.id = scrapping.cache_id where cache.created_at >= DATE_ADD(NOW(), INTERVAL -30 DAY) and cache.query= (?) order by cache.created_at DESC limit 1;', [$ciudad]);
 
         //NO HAY CACHE
         if (empty($cache)){
@@ -82,11 +85,11 @@ class BusquedaController extends Controller
             $json_odio = self::noticias($request);
             $odio = $json_odio['resultado'];
 
-            //Crear búsqueda y rellenar con odio
-            DB::insert('insert into busqueda (usuario_id, query,porcentaje_odio) values (?, ?,?)', [1, $ciudad,$odio]);
-            $busqueda = DB::select('select id from busqueda order by id desc limit 1');
+            //Crear cache y rellenar con odio
+            DB::insert('insert into cache (query, porcentaje_odio) values (?,?)', [$ciudad,$odio]); //Creamos entrada en cache
+            $busqueda = DB::select('select id from cache order by id desc limit 1');    //Cogemos el ID de esa entrada para rellenar todas las tablas
             $id = $busqueda[0];
-            $busqueda_id = $id->id; //id de búsqueda creada
+            $cache_id = $id->id; //id de búsqueda creada
 
             //Scrapping si no hay caché
             $json_viviendas = self::viviendas($request);
@@ -96,7 +99,7 @@ class BusquedaController extends Controller
             $precio = self::precio($request);
             $m2 =$precio['m2'];
             $medio =$precio['medio'];
-            DB::insert('insert into scrapping (busqueda_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$busqueda_id,  $m2, $medio,$comprar,$alquilar ]);
+            DB::insert('insert into scrapping (cache_id, precio_m2, precio_viviendas, num_viviendas_venta, num_viviendas_alquiler) values (?, ?, ?, ?, ?)', [$cache_id,  $m2, $medio,$comprar,$alquilar ]);
 
             //RESTAURANTES si no hay caché
             $json_restaurantes = self::restaurantes($request);
@@ -109,21 +112,21 @@ class BusquedaController extends Controller
             $etiquetas =$json_restaurantes['etiquetas'];
             $etiquetas =json_encode($json_restaurantes['etiquetas']);
 
-            DB::insert('insert into restaurantes (busqueda_id, nombre, puntuacion, etiquetas) values (?, ?, ?, ?)', [$busqueda_id,  $nombres, $valoraciones, $etiquetas]);
+            DB::insert('insert into restaurantes (cache_id, nombre, puntuacion, etiquetas) values (?, ?, ?, ?)', [$cache_id,  $nombres, $valoraciones, $etiquetas]);
         }
         else{
             $cache_json = $cache[0];
-            $busqueda_id = $cache_json->id; //ESTE ES EL ID QUE YA EXISTE Y REUTILIZAMOS
+            $cache_id = $cache_json->id; //ESTE ES EL ID QUE YA EXISTE Y REUTILIZAMOS
         }
 
         // TWEETS se ejecutan siempre
         $json_tweets = self::tweets($request);
         $valores_ = json_encode($json_tweets['valores']);
         #$valores = json_encode($json_tweets->valores);
-        DB::insert('insert into `usuario-busqueda` (usuario_id, busqueda_id, ultimos_100) values (?,?,?)', [1, $busqueda_id, $valores_]);  //ID REUTILIZADO
+        DB::insert('insert into busqueda (cache_id, ultimos_100) values (?,?)', [$cache_id, $valores_]);  //ID REUTILIZADO
 
         //Final. Select de todo para esa búsqueda
-        $resultado = DB::select('SELECT busqueda.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, `usuario-busqueda`.ultimos_100, busqueda.porcentaje_odio FROM `busqueda` join `usuario-busqueda` on busqueda.id = `usuario-busqueda`.busqueda_id join scrapping on busqueda.id=scrapping.busqueda_id join restaurantes on busqueda.id=restaurantes.busqueda_id where busqueda.id =(?)', [$busqueda_id]);
+        $resultado = DB::select('SELECT cache.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.ultimos_100, cache.porcentaje_odio FROM cache join busqueda on cache.id = busqueda.cache_id join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id where cache.id =(?)', [$cache_id]);
         return $resultado[0];
 
     }

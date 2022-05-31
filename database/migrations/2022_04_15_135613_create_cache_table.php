@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('busqueda', function (Blueprint $table) {
+        Schema::create('cache', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')->references('id')->on('users');
+            //$table->unsignedBigInteger('usuario_id');
+            //$table->foreign('usuario_id')->references('id')->on('users');
             $table->string('query');
             $table->float('porcentaje_odio');
             $table->timestamp('created_at')->useCurrent();
