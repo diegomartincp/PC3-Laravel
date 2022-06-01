@@ -18,7 +18,7 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
     contenidoGastroranking = BeautifulSoup(pageGastroranking.content, 'html.parser')
 
     # sacar el título, ranking y etiquetas de los restaurantes
-    df = pd.DataFrame(columns=['nombreRestaurante', 'valoracion', 'etiquetas'])
+    #df = pd.DataFrame(columns=['nombreRestaurante', 'valoracion', 'etiquetas'])
 
     #Nombre
     for h3 in contenidoGastroranking.find_all('h3', class_='restaurantName'):
@@ -70,8 +70,8 @@ def elimina_tildes(cadena):
     #s = s.replace("-", "+") #SI normaliza un + a un - lo acambiamos
     return s
 
-#query = sys.argv[1]
-query = "fuente del saz"
+query = sys.argv[1]
+#query = "tres cantos"
 #query = query.encode('raw_unicode_escape').decode('utf8')
 query = elimina_tildes(query)
 #print(query)
