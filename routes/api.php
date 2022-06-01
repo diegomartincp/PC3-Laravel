@@ -43,3 +43,7 @@ Route::get('/select_busquedas','App\Http\Controllers\BusquedaController@select_b
 Route::get('/select_cache','App\Http\Controllers\BusquedaController@select_cache_admin')->middleware('auth:api');
 Route::get('/select_query','App\Http\Controllers\BusquedaController@select_query')->middleware('auth:api');
 Route::get('/select_ranking','App\Http\Controllers\BusquedaController@select_ranking')->middleware('auth:api');
+Route::get('/select_usuarios','App\Http\Controllers\BusquedaController@select_usuarios')->middleware('auth:api');
+Route::get('/update_user_validar','App\Http\Controllers\BusquedaController@update_user_validar')->middleware('auth:api');
+Route::get('/select_ultimos_Tweets','App\Http\Controllers\BusquedaController@select_ultimos_Tweets')->middleware('auth:api');
+Route::get('/modificar_ultimos_Tweets','App\Http\Controllers\BusquedaController@modificar_ultimos_Tweets')->middleware('auth:api');

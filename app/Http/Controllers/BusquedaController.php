@@ -45,6 +45,34 @@ class BusquedaController extends Controller
         return $busquedas;
     }
 
+    //SELECCIONAR USUARIOS REGISTRADOS
+    public function select_usuarios(Request $request)
+    {
+        $busquedas = DB::select('select name, email, created_at, id from users where validado = 0', []);
+        return $busquedas;
+    }
+    public function select_ultimos_Tweets(Request $request)
+    {
+        $busquedas = DB::select('select numero_tweets from config', []);
+        return $busquedas;
+    }
+    public function modificar_ultimos_Tweets(Request $request)
+    {
+        $cantidad = $request->query('numero_tweets');
+        $busquedas = DB::select('UPDATE config SET numero_tweets=?', [$cantidad]);
+        $prueba = DB::select('select * from config');
+        return $prueba;
+    }
+
+    //VALIDACION USUARIOS
+    public function update_user_validar(Request $request)
+    {
+        $id = $request->query('id');
+        $busquedas = DB::select('UPDATE users SET validado = 1, updated_at = now() WHERE  id =(?);', [ $id ]);
+        return $busquedas;
+    }
+
+
     //FUNCIONES REGISTRO Y LOGIN ANTIGUAS
     public function registro_usuario(Request $request)
     {   //registrar usuario
@@ -77,6 +105,12 @@ class BusquedaController extends Controller
         $ciudad = $request->query('ciudad');
 
         $cache = DB::select('select cache.id from scrapping join cache on cache.id = scrapping.cache_id where cache.created_at >= DATE_ADD(NOW(), INTERVAL -30 DAY) and cache.query= (?) order by cache.created_at DESC limit 1;', [$ciudad]);
+
+        //COMPROBACION NUMERO TWEETS
+        $cantidadTweets = DB::select('select id from config');
+        if (empty($cantidadTweets)){
+            DB::insert('insert into config (numero_tweets) values (100)');
+        }
 
         //NO HAY CACHE
         if (empty($cache)){
@@ -120,13 +154,29 @@ class BusquedaController extends Controller
         }
 
         // TWEETS se ejecutan siempre
-        $json_tweets = self::tweets($request);
-        $valores_ = json_encode($json_tweets['valores']);
+        //$json_tweets = self::tweets($request);
+        $RUTA_PYTHON=env('RUTA_PYTHON');
+        $RUTA_CARPETA_LARAVEL=env('RUTA_CARPETA_LARAVEL');
+
+        $ciudad = $request->query('ciudad');
+        $ciudad_ = str_replace(" ", "+", $ciudad);
+
+        #selecionamos cantidad de tweets
+        $config = DB::select('select numero_tweets from config limit 1');
+
+        $numeroTweets = $config[0]->numero_tweets;
+        #Llamada python
+        $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_." ".$numeroTweets);
+        $json = json_decode($result,true);
+
+        $valores_ = json_encode($json['valores']);
+
         #$valores = json_encode($json_tweets->valores);
         DB::insert('insert into busqueda (cache_id, ultimos_100) values (?,?)', [$cache_id, $valores_]);  //ID REUTILIZADO
 
         //Final. Select de todo para esa búsqueda
         $resultado = DB::select('SELECT cache.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.ultimos_100, cache.porcentaje_odio FROM cache join busqueda on cache.id = busqueda.cache_id join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id where cache.id =(?)', [$cache_id]);
+
         return $resultado[0];
 
     }
@@ -145,11 +195,16 @@ class BusquedaController extends Controller
         $ciudad = $request->query('ciudad');
         $ciudad_ = str_replace(" ", "+", $ciudad);
 
+        #selecionamos cantidad de tweets
+        $config = DB::select('select numero_tweets from config limit 1');
+        $numeroTweets = $config[0]->numero_tweets;
+
+
         #Llamada python
-        $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_);
+        $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_." ".$numeroTweets);
         $json = json_decode($result,true);
 
-        return $json;
+        return $numeroTweets;
     }
     /*prueba commit*/
 

@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 
 #Recoger la query
 query = sys.argv[1] #Este argumento es la query
+numero = int(sys.argv[2])
 #query="Alcobendas"
+#numero = 10
 query_ = query.replace ("+", " ") #Cambiamos el + por un espacio
 
 #CLAVES DIEGO
@@ -28,7 +30,7 @@ api = tweepy.API(auth)
 
 
 #Realiza la búsqueda en la api
-tweets = tweepy.Cursor(api.search_tweets, q=query).items(100)
+tweets = tweepy.Cursor(api.search_tweets, q=query).items(numero)
 
 tweets_texto=[]
 
@@ -60,6 +62,6 @@ for tweet in tweets_texto:
 #Exportar a JSON
 import json
 json_twets={}
-json_twets = {"valores": registro_sentimientos}
+json_twets = {"valores": registro_sentimientos, "numero": numero}
 archivo = json.dumps(json_twets)
 print(archivo)
