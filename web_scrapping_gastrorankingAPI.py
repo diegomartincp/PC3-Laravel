@@ -68,7 +68,7 @@ def elimina_tildes(cadena):
     return s
 
 query = sys.argv[1]
-#query = "tres cantos"
+#query = "fuente del saz"
 #query = query.encode('raw_unicode_escape').decode('utf8')
 query = elimina_tildes(query)
 #print(query)
@@ -82,16 +82,21 @@ Headers = {"X-Requested-With": "XMLHttpRequest"}
 r = requests.get(url=urlAPI, headers=Headers)
 data = r.json()
 
+try:
+    if(len(data)>1):
+        url_from_api = data[1].split(', ')
 
-if(len(data)>1):
-    url_from_api = data[1].split(', ')
+    else:
+        url_from_api = data[0].split(', ')
+    
+    ca = url_from_api[1].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8') #Pasamos de un caracter raro como Ã³ a ó
+    municipio = url_from_api[0].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8')
+    municipio = elimina_tildes(municipio) #Eliminamos las tíldes
+except:
+    url_from_api = ""
+    ca = ""
+    municipio = ""
 
-else:
-    url_from_api = data[0].split(', ')
-
-ca = url_from_api[1].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8') #Pasamos de un caracter raro como Ã³ a ó
-municipio = url_from_api[0].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8')
-municipio = elimina_tildes(municipio) #Eliminamos las tíldes
 
 #Una vez hecha la llamada (con las tres listas en las que almacenaremos los datos), el metodo nos devolvera
 #estas listas llenas con la información que nos interesa
