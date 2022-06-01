@@ -12,6 +12,9 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
     print(url)
     pageGastroranking = requests.get(url)
     print("Respuesta: "+str(pageGastroranking.status_code))
+    if pageGastroranking.status_code!=200:
+        return 0
+
     contenidoGastroranking = BeautifulSoup(pageGastroranking.content, 'html.parser')
 
     # sacar el título, ranking y etiquetas de los restaurantes
@@ -67,8 +70,8 @@ def elimina_tildes(cadena):
     #s = s.replace("-", "+") #SI normaliza un + a un - lo acambiamos
     return s
 
-query = sys.argv[1]
-#query = "fuente del saz"
+#query = sys.argv[1]
+query = "fuente del saz"
 #query = query.encode('raw_unicode_escape').decode('utf8')
 query = elimina_tildes(query)
 #print(query)
