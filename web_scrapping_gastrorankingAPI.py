@@ -50,17 +50,17 @@ def gastrorankingData(ca, municipio, nombres, valoraciones, etiquetas):
     print(str(len(nombres))+" "+str(len(valoraciones))+" "+str(len(etiquetas)))
 
     #insertamos los datos en un dataframe REVISAR
-    for n in range(len(nombres)):
-        #df.append({'nombreRestaurante' : nombres[n] , 'valoracion' : valoraciones[n], 'etiquetasetiquetas' : etiquetas[n]} , ignore_index=True)
-        new_list = [ (nombres[n], valoraciones[n], etiquetas[n])]
-        print(new_list)
-        dfNew = pd.DataFrame(new_list, columns = ['nombreRestaurante' , 'valoracion', 'etiquetas'])
-        df = df.append(dfNew,ignore_index=True)
+    #for n in range(len(nombres)):
+     #   #df.append({'nombreRestaurante' : nombres[n] , 'valoracion' : valoraciones[n], 'etiquetasetiquetas' : etiquetas[n]} , ignore_index=True)
+      #  new_list = [ (nombres[n], valoraciones[n], etiquetas[n])]
+      #  print(new_list)
+       # dfNew = pd.DataFrame(new_list, columns = ['nombreRestaurante' , 'valoracion', 'etiquetas'])
+        #df = df.append(dfNew,ignore_index=True)
 
     #Exportamos el dataframe a un csv
     #df.to_csv('infoGastroranking.csv', index=False)
 
-    return df
+    return 1
 
 #Metodo para eliminar las tildes de una cadena de texto
 import unicodedata
@@ -91,7 +91,7 @@ try:
 
     else:
         url_from_api = data[0].split(', ')
-    
+
     ca = url_from_api[1].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8') #Pasamos de un caracter raro como Ã³ a ó
     municipio = url_from_api[0].replace("Ã±", "n").encode('raw_unicode_escape').decode('utf8')
     municipio = elimina_tildes(municipio) #Eliminamos las tíldes
