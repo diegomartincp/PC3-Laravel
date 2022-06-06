@@ -173,6 +173,7 @@ class BusquedaController extends Controller
         $config = DB::select('select numero_tweets from config limit 1');
 
         $numeroTweets = $config[0]->numero_tweets;
+
         #Llamada python
         $result = exec($RUTA_PYTHON." ".$RUTA_CARPETA_LARAVEL."/tweepy_oauthv2_sentiment_analysis_laravel.py " . $ciudad_." ".$numeroTweets);
         $json = json_decode($result,true);
@@ -183,7 +184,7 @@ class BusquedaController extends Controller
         DB::insert('insert into busqueda (cache_id, ultimos_100) values (?,?)', [$cache_id, $valores_]);  //ID REUTILIZADO
 
         //Final. Select de todo para esa búsqueda
-        $resultado = DB::select('SELECT cache.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.ultimos_100, cache.porcentaje_odio FROM cache join busqueda on cache.id = busqueda.cache_id join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id where cache.id =(?)', [$cache_id]);
+        $resultado = DB::select('SELECT cache.id, restaurantes.nombre, restaurantes.puntuacion, restaurantes.etiquetas, scrapping.precio_m2, scrapping.precio_viviendas, scrapping.num_viviendas_venta, scrapping.num_viviendas_alquiler, busqueda.ultimos_100, cache.porcentaje_odio FROM cache join busqueda on cache.id = busqueda.cache_id join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id order by busqueda.id DESC limit 1', []);
 
         return $resultado[0];
 
