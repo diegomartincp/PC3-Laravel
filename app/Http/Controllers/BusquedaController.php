@@ -27,6 +27,14 @@ class BusquedaController extends Controller
         join scrapping on cache.id=scrapping.cache_id join restaurantes on cache.id=restaurantes.cache_id', []);
         return $busquedas;
     }
+    public function select_graficos_busquedas(Request $request)
+    {
+        $busquedas = DB::select('SELECT  count(busqueda.cache_id) as cantidad, query FROM busqueda
+        join cache on busqueda.cache_id = cache.id
+        group by query');
+        return $busquedas;
+    }
+
     //Seleccionar todas las búsquedas para una query
     public function select_query(Request $request)
     {

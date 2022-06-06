@@ -47,3 +47,4 @@ Route::get('/select_usuarios','App\Http\Controllers\BusquedaController@select_us
 Route::get('/update_user_validar','App\Http\Controllers\BusquedaController@update_user_validar')->middleware('auth:api');
 Route::get('/select_ultimos_Tweets','App\Http\Controllers\BusquedaController@select_ultimos_Tweets')->middleware('auth:api');
 Route::get('/modificar_ultimos_Tweets','App\Http\Controllers\BusquedaController@modificar_ultimos_Tweets')->middleware('auth:api');
+Route::get('/graficos_busquedas','App\Http\Controllers\BusquedaController@select_graficos_busquedas')->middleware('auth:api');
