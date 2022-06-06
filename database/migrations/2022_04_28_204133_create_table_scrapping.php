@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('cache_id');
             $table->foreign('cache_id')->references('id')->on('cache')->onDelete('cascade');
-            $table->float('precio_m2');
-            $table->float('precio_viviendas');
+            $table->string('precio_m2');
+            $table->string('precio_viviendas');
             $table->text('num_viviendas_venta');
             $table->text('num_viviendas_alquiler');
             $table->timestamps();
